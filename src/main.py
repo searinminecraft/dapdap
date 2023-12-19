@@ -26,7 +26,8 @@ from voltage.errors import (
 )
 from voltage.ext.commands import (
     CommandsClient,
-    HelpCommand, 
+    HelpCommand,
+    Cog,
     CommandContext,
     Command
 )
@@ -44,6 +45,7 @@ from helper import log
 
 import sys
 import traceback
+from pathlib import Path
 
 class NoHelp(HelpCommand):
     async def send_help(self, ctx):
@@ -113,6 +115,24 @@ class Help(HelpCommand):
 
         await ctx.reply(embed = embed)
 
+    async def send_cog_help(self, ctx: CommandContext, cog: Cog):
+        embed = SendableEmbed(
+            title = f"Help for cog {cog.name}",
+            color = config.accentcolor,
+            icon_url = self.client.user.display_avatar.url
+        )
+
+        text = ""
+        text += "## Description\n"
+        text += f"{cog.description if cog.description else '(no description)'}\n\n" 
+
+        text += "## Commands\n"
+        text += ", ".join([x.name for x in cog.commands])
+
+        embed.description = text
+
+        await ctx.reply(embed=embed)
+
     async def send_not_found(self, ctx: CommandContext, target: str):
 
         return await ctx.reply(embed=SendableEmbed(
@@ -148,6 +168,9 @@ async def on_ready():
 
 @client.listen('message')
 async def on_message(m: Message):
+
+    if not Path("ignorelist.txt").exists():    
+        open('ignorelist.txt', 'w').write("")
 
     with open('ignorelist.txt', 'r') as f:
         ignorelist = f.read().splitlines()

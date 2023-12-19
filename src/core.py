@@ -167,15 +167,11 @@ def setup(client: CommandsClient) -> Cog:
                 msg = await ctx.send(embed=SendableEmbed(
                     description = f'No messages deleted. ({errors} errors, {skipped} skipped)',
                     color = config.errorcolor
-                ))
-                await asyncio.sleep(5)
-                return await msg.delete()
+                ), delete_after=5)
 
-            msg = await ctx.send(embed=SendableEmbed(
+            msg = await ctx.reply(embed=SendableEmbed(
                 description = f'Successfully deleted {deleted} messages. ({errors} errors, {skipped} skipped)',
                 color = config.accentcolor
-            ))
-            await asyncio.sleep(5)
-            return await msg.delete()
+            ), delete_after=5)
 
     return core
