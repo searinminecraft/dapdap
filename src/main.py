@@ -244,8 +244,13 @@ Exception: {e}
         log.warn('errorhandler', e)
         return
 """
-try:
-    log.verbose('client', 'Starting client...') 
-    client.run(config.token, bot=False, banner=False)
-except HTTPError as e:
-    log.fatal('client', f'An HTTP error occured: {e.response}')
+while True:
+
+    try:
+        log.verbose('client', 'Starting client...') 
+        client.run(config.token, bot=False, banner=False)
+    except HTTPError as e:
+        log.fatal('client', f'An HTTP error occured: {e.response}')
+
+    if config.actuallyShutdown:
+        break

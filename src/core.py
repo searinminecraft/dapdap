@@ -174,4 +174,17 @@ def setup(client: CommandsClient) -> Cog:
                 color = config.accentcolor
             ), delete_after=5)
 
+    @core.command()
+    async def shutdown(ctx: CommandContext):
+        if ctx.author.id == client.user.id or ctx.author.id in config.owners:
+
+            config.actuallyShutdown = True
+            log.info("client", f"Shutdown requested by {ctx.author} ({ctx.author.id})")
+
+            await ctx.reply(embed=SendableEmbed(
+                    description="Shutting down...",
+                    color=config.accentcolor
+                ))
+            await ctx.client.ws.ws.close()
+
     return core

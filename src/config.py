@@ -7,6 +7,7 @@ def init():
     global errorcolor
     global owners
     global prefix
+    global actuallyShutdown
     global verboselog
     global stealthmode
 
@@ -21,3 +22,4 @@ def init():
     owners = config['owners']
     prefix = config['prefix']
     stealthmode = config['stealthmode']
+    actuallyShutdown = False
