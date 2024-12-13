@@ -88,13 +88,16 @@ def setup(client: CommandsClient) -> Cog:
 
 
     @core.command(description = 'Makes me leave this server.')
-    async def leaveserver(ctx: CommandContext):
+    async def leaveserver(ctx: CommandContext, server: str = None):
         if ctx.author.id == client.user.id or ctx.author.id in config.owners:
-            if ctx.server is None:
-                return await ctx.reply(embed=SendableEmbed(
-                    description = 'I can only leave if this is a server.',
-                    color = config.errorcolor
-                ))
+            if not server:
+                if not ctx.server:
+                    return await ctx.reply("Please run this command on a server, or specify a server ID.")
+                server = ctx.server
+            else:
+                server = client.get_server(server)
+                if not server:
+                    return await ctx.reply("Can't find server")
 
             try:
                 dm = await client.http.open_dm(ctx.author.id)
@@ -107,9 +110,9 @@ def setup(client: CommandsClient) -> Cog:
 
             await channel.send(embed=SendableEmbed(
                 title = 'Warning!',
-                description = f'Do you want me to leave the server **{ctx.server.name}** (`{ctx.server.id}`)? (y/n)',
+                description = f'Do you want me to leave the server **{server.name}** (`{server.id}`)? (y/n)',
                 color = config.accentcolor,
-                icon_url = ctx.server.icon.url if ctx.server.icon else None
+                icon_url = server.icon.url if server.icon else None
             ))
 
             try:
@@ -118,7 +121,7 @@ def setup(client: CommandsClient) -> Cog:
                 return
 
             if resp.content.lower() == 'y':
-                await ctx.server.leave()
+                await server.leave()
 
                 return await channel.send(embed=SendableEmbed(
                     description = 'Successfully left server.',
